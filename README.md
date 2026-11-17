@@ -34,6 +34,12 @@ Bluetooth Low Energy, using the Homey Pro's built-in Bluetooth.
 
 ## Install
 
+**Easiest: the test version in the Homey App Store.** Open this link on a device where you are logged in to your
+Homey account and install it from there: https://homey.app/a/app.xzense.unofficial/test/
+This is a test release of an unofficial community app; it has not been certified by Athom (yet).
+
+Or install from source with the Homey CLI:
+
 ```sh
 git clone https://github.com/Adrianni/Xzense-homey-app.git
 cd Xzense-homey-app
