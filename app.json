@@ -12,8 +12,8 @@
     "no": "Xzense (uoffisiell)"
   },
   "description": {
-    "en": "Monitor and control the chimney fan: fan speed, boost, ventilation and temperatures.",
-    "no": "Overvåk og styr pipevifta: viftehastighet, boost, ventilasjon og temperaturer."
+    "en": "Unofficial community app to monitor and control the chimney fan: fan speed, boost, ventilation and temperatures.",
+    "no": "Uoffisiell community-app for å overvåke og styre pipevifta: viftehastighet, boost, ventilasjon og temperaturer."
   },
   "category": [
     "climate"
@@ -32,6 +32,9 @@
   },
   "source": "https://github.com/Adrianni/Xzense-homey-app",
   "support": "https://github.com/Adrianni/Xzense-homey-app/issues",
+  "bugs": {
+    "url": "https://github.com/Adrianni/Xzense-homey-app/issues"
+  },
   "flow": {
     "triggers": [
       {

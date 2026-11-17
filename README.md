@@ -47,6 +47,11 @@ which has no Bluetooth.)
 
 Then add a device: **Devices -> + -> Xzense (unofficial)**, select your controller, enter the PIN.
 
+## Support
+
+This is an unofficial community app. Report problems and suggestions as an issue in this repository:
+https://github.com/Adrianni/Xzense-homey-app/issues
+
 ## Settings (per device)
 
 | Setting | Default | Meaning |
