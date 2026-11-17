@@ -76,11 +76,10 @@ speed, so the "Fan speed (now)" value follows that delay, not the app's.
 - The app connects briefly on each poll instead of staying connected, which spares the controller's battery.
 - A wrong PIN is tried once and the app then stops polling, because the controller may lock out repeated
   failures. Remove and re-add the device with the right PIN.
-- **Ventilation is not yet confirmed on a real controller.** Its start/stop message follows the published protocol
-  notes and is covered by unit tests against reference frames, but nobody has verified it on hardware. The controller
-  answers ACK or NACK and decides whether ventilation is allowed in its current state; a refusal is shown as an error.
-- Tested with a single controller only. Registers marked "inferred" in `lib/protocol.js` are best guesses,
-  and other controller software versions may behave differently.
+- Tested on one controller only. Reading the state, changing the fan speed, boost, ventilation and switching between
+  them have all been tried on it by the app's owner and work. The controller decides whether a command is allowed in its
+  current state and answers ACK or NACK; a refusal is shown as an error. Registers marked "inferred" in
+  `lib/protocol.js` are best guesses, and other controller software versions may behave differently.
 - Homey's own UI limits what the device screen can show: a slider has no label, and buttons and sensors live on
   separate tabs. The dashboard widget exists to give a clearer view of the fan speed.
 
