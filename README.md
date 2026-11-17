@@ -97,9 +97,8 @@ from a real controller. Thanks to the community project
 [larsmarius87/xzense-home-assistant](https://github.com/larsmarius87/xzense-home-assistant), whose published
 protocol notes made this possible. No code from that project is included here.
 
-**Images:** the app and driver images in `assets/images/` and `drivers/xzense/assets/images/` are plain placeholders.
-Product pictures and logos of the controller belong to its manufacturer and are not included in this repository.
-Replace the placeholders with your own pictures (see the Homey App Store guidelines for sizes) before submitting an app.
+**Images:** the product picture of the controller used for the app and driver images is (c) exodraft a/s, the
+manufacturer of Xzense. It is shown only to identify the device this app works with.
 
 Layout: `lib/` (protocol and Bluetooth session), `drivers/xzense/` (pairing, device), `widgets/fan/`
 (dashboard widget), `.homeycompose/` (capabilities and flow cards), `locales/` (English and Norwegian).
