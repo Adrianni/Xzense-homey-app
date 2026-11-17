@@ -42,7 +42,11 @@
             "no": "Ventilasjon"
           }
         }
-      ]
+      ],
+      "title": {
+        "en": "Mode",
+        "no": "Modus"
+      }
     }
   ]
 }

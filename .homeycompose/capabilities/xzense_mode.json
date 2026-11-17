@@ -30,5 +30,5 @@
   "getable": true,
   "setable": true,
   "uiComponent": "picker",
-  "icon": "/assets/icon.svg"
+  "icon": "/assets/flame.svg"
 }

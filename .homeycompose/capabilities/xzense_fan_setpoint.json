@@ -15,5 +15,5 @@
   "setable": true,
   "uiComponent": "slider",
   "insights": true,
-  "icon": "/assets/icon.svg"
+  "icon": "/assets/flame.svg"
 }

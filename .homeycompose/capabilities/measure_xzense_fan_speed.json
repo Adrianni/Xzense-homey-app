@@ -14,5 +14,5 @@
   "setable": false,
   "uiComponent": "sensor",
   "insights": true,
-  "icon": "/assets/icon.svg"
+  "icon": "/assets/flame.svg"
 }

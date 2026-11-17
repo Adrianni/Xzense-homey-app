@@ -1,18 +1,31 @@
 {
-  "title": { "en": "Set fan speed", "no": "Sett viftehastighet" },
+  "title": {
+    "en": "Set fan speed",
+    "no": "Sett viftehastighet"
+  },
   "titleFormatted": {
     "en": "Set fan speed to [[speed]]%",
     "no": "Sett viftehastighet til [[speed]] %"
   },
   "args": [
-    { "type": "device", "name": "device", "filter": "driver_id=xzense" },
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=xzense"
+    },
     {
       "type": "number",
       "name": "speed",
       "min": 0,
       "max": 100,
       "step": 1,
-      "placeholder": { "en": "20" }
+      "placeholder": {
+        "en": "20"
+      },
+      "title": {
+        "en": "Fan speed",
+        "no": "Viftehastighet"
+      }
     }
   ]
 }

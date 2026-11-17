@@ -1,8 +1,11 @@
 {
   "type": "string",
-  "title": { "en": "State", "no": "Tilstand" },
+  "title": {
+    "en": "State",
+    "no": "Tilstand"
+  },
   "getable": true,
   "setable": false,
   "uiComponent": "sensor",
-  "icon": "/assets/icon.svg"
+  "icon": "/assets/flame.svg"
 }
