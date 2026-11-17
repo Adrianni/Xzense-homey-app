@@ -1,7 +1,12 @@
 {
   "type": "number",
-  "title": { "en": "Panel battery", "no": "Panelbatteri" },
-  "units": { "en": "%" },
+  "title": {
+    "en": "Panel battery",
+    "no": "Panelbatteri"
+  },
+  "units": {
+    "en": "%"
+  },
   "min": 0,
   "max": 100,
   "decimals": 0,
@@ -9,5 +14,5 @@
   "setable": false,
   "uiComponent": "sensor",
   "insights": true,
-  "icon": "/assets/icon.svg"
+  "icon": "/assets/battery.svg"
 }

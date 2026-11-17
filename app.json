@@ -596,7 +596,7 @@
       "setable": false,
       "uiComponent": "sensor",
       "insights": true,
-      "icon": "/assets/icon.svg"
+      "icon": "/assets/battery.svg"
     },
     "xzense_signal": {
       "type": "number",
