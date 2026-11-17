@@ -48,11 +48,16 @@ Then add a device: **Devices -> + -> Xzense (unofficial)**, select your controll
 
 | Setting | Default | Meaning |
 |---|---|---|
-| Poll interval | 60 s | Time between Bluetooth connections while idle |
-| Poll interval while burning | 30 s | Used during boost, operation, burnout, afterrun |
+| Poll interval | 60 s | How often the controller is read while idle |
+| Poll interval while burning | 30 s | How often it is read during boost, operation, burnout, afterrun |
 | Fan slider step | 5 % | Step of the slider and of the widget buttons |
 | Minimum / maximum fan speed | 10 % / 100 % | Safety limits; commands outside them are clamped |
 | Chimney alarm temperature | 220 °C | Threshold for the `alarm_heat` alarm |
+
+Changes you make from Homey (slider, boost, flow cards, widget) are **sent immediately** and never wait
+for the poll interval. The slider writes the first change at once, and if you keep dragging, the newest value
+is written over the same Bluetooth connection. After a change the app reads the controller repeatedly until the
+fan (or boost) has reached the new value, then the regular poll interval starts over.
 
 ## Good to know
 
@@ -69,7 +74,7 @@ Then add a device: **Devices -> + -> Xzense (unofficial)**, select your controll
 ## Development
 
 ```sh
-npm test                                   # frame building/parsing tests
+npm test                                   # protocol and command-sequence tests
 homey app validate --level publish
 ```
 

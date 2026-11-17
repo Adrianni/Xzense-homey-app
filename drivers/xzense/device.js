@@ -5,7 +5,6 @@ const { XzenseClient, XzenseError } = require('../../lib/client');
 const P = require('../../lib/protocol');
 
 const RETRY_DELAY_MS = 30000;
-const FAN_DEBOUNCE_MS = 800; // slider or widget changes within this window are sent as one command
 
 const REQUIRED_CAPABILITIES = ['xzense_fan_setpoint', 'measure_xzense_fan_speed', 'xzense_boost_mode'];
 
@@ -25,7 +24,7 @@ const SENSOR_ORDER = [
 class XzenseDevice extends Homey.Device {
   async onInit() {
     this._pollTimer = null;
-    this._fanTimer = null;
+    this._fanSending = null; // promise while fan commands are being written
     this._stopped = false;
     this._deviceState = null;
     this._knownSetpoint = null; // last fan setpoint confirmed by the controller (GLOBAL 0x50)
@@ -40,9 +39,10 @@ class XzenseDevice extends Homey.Device {
       this.log.bind(this),
     );
 
-    // The slider sets the fan speed. Dragging fires many events, so they are debounced into one command.
+    // The slider sets the fan speed. Each change is sent at once; a newer value overtakes an older one in flight.
     this.registerCapabilityListener('xzense_fan_setpoint', async (value) => {
-      this._queueFan(this._clampFanSpeed(Math.round(Number(value) * 100)));
+      // Fire and forget: the command goes out immediately, failures are shown as a warning on the device.
+      this._queueFan(this._clampFanSpeed(Math.round(Number(value) * 100))).catch(() => {});
     });
     // Boost is a picker with two choices ("Boost av" / "Boost på"); Homey highlights the current one.
     this.registerCapabilityListener('xzense_boost_mode', async (value) => {
@@ -173,49 +173,46 @@ class XzenseDevice extends Homey.Device {
     this._queueFan(this._clampFanSpeed(Number(base) + direction * this._fanStep()));
   }
 
+  /**
+   * Set a new fan target. The value shows on screen at once and the command is sent without delay.
+   * If a command is already being written, the newer value is picked up by it (see
+   * XzenseClient.setFanSpeed) so quick drags never queue up behind each other.
+   */
   _queueFan(target) {
     this._targetFan = target;
     this.setCapabilityValue('xzense_fan_setpoint', target / 100).catch(this.error);
     this._emitFanState();
-
-    if (this._fanTimer) this.homey.clearTimeout(this._fanTimer);
-    this._fanTimer = this.homey.setTimeout(() => this._sendPendingFan(), FAN_DEBOUNCE_MS);
+    if (!this._fanSending) this._fanSending = this._drainFan();
+    return this._fanSending;
   }
 
-  async _sendPendingFan() {
-    const target = this._targetFan;
-    this._fanTimer = null;
-    if (target === null) return;
+  async _drainFan() {
     try {
-      await this._runCommand(() => this._client.setFanSpeed(target));
-    } catch (err) {
-      // _runCommand already logged; show the controller's real value again.
-      if (this._knownSetpoint !== null) {
-        await this.setCapabilityValue('xzense_fan_setpoint', this._knownSetpoint / 100).catch(this.error);
+      while (this._targetFan !== null) {
+        let result;
+        try {
+          result = await this._runCommand(() => this._client.setFanSpeed(() => this._targetFan));
+        } catch (err) {
+          // _runCommand already logged; show the controller's real value again.
+          this._targetFan = null;
+          if (this._knownSetpoint !== null) {
+            await this.setCapabilityValue('xzense_fan_setpoint', this._knownSetpoint / 100).catch(this.error);
+          }
+          await this.setWarning(err.message).catch(this.error);
+          throw err;
+        }
+        // A value that arrived after the last write is sent by the next round of this loop.
+        if (this._targetFan === result.sent) this._targetFan = null;
       }
-      await this.setWarning(err.message).catch(this.error);
     } finally {
-      if (this._targetFan === target) this._targetFan = null;
+      this._fanSending = null;
       this._emitFanState();
     }
   }
 
   /** Called by the "Set fan speed" flow card. */
   async setFanSpeed(percent) {
-    const target = this._clampFanSpeed(percent);
-    this._targetFan = target;
-    await this.setCapabilityValue('xzense_fan_setpoint', target / 100).catch(this.error);
-    this._emitFanState();
-    if (this._fanTimer) {
-      this.homey.clearTimeout(this._fanTimer);
-      this._fanTimer = null;
-    }
-    try {
-      await this._runCommand(() => this._client.setFanSpeed(target));
-    } finally {
-      if (this._targetFan === target) this._targetFan = null;
-      this._emitFanState();
-    }
+    await this._queueFan(this._clampFanSpeed(percent));
   }
 
   async setBoost(enabled) {
@@ -228,6 +225,9 @@ class XzenseDevice extends Homey.Device {
       await this._applyReading(result);
       await this.setAvailable().catch(this.error);
       await this.unsetWarning().catch(this.error);
+      // A fresh reading was just taken, so the next regular poll starts counting from now.
+      this._schedulePoll(this._pollIntervalMs());
+      return result;
     } catch (err) {
       this.error('Command failed:', err.message);
       throw new Error(this._userMessage(err));
@@ -337,7 +337,6 @@ class XzenseDevice extends Homey.Device {
   _clearTimers() {
     this._stopped = true;
     if (this._pollTimer) this.homey.clearTimeout(this._pollTimer);
-    if (this._fanTimer) this.homey.clearTimeout(this._fanTimer);
   }
 
   async onDeleted() {

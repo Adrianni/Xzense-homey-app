@@ -359,8 +359,8 @@
             "no": "Oppdateringsintervall"
           },
           "hint": {
-            "en": "Seconds between connections. The controller only accepts one Bluetooth client at a time and every connection uses its battery.",
-            "no": "Sekunder mellom hver tilkobling. Kontrolleren tillater bare én Bluetooth-klient om gangen, og hver tilkobling bruker batteri."
+            "en": "How often the controller is read while idle. Changes made from Homey (slider, boost, flows) are sent immediately and never wait for this interval. Every connection uses controller battery.",
+            "no": "Hvor ofte kontrolleren leses når peisen ikke er i bruk. Endringer du gjør fra Homey (slider, boost, flows) sendes umiddelbart og venter aldri på dette intervallet. Hver tilkobling bruker batteri i kontrolleren."
           },
           "value": 60,
           "min": 30,
@@ -377,8 +377,8 @@
             "no": "Oppdateringsintervall under fyring"
           },
           "hint": {
-            "en": "Seconds between connections while the fireplace is running (boost, operation, burnout, afterrun). Shorter keeps the values more live but uses more controller battery.",
-            "no": "Sekunder mellom hver tilkobling mens peisen er i gang (boost, drift, utbrenning, etterkjøring). Kortere gir mer live verdier, men bruker mer batteri i kontrolleren."
+            "en": "How often the controller is read while the fireplace is running (boost, operation, burnout, afterrun). Changes made from Homey are still sent immediately. Shorter keeps values more live but uses more controller battery.",
+            "no": "Hvor ofte kontrolleren leses mens peisen er i gang (boost, drift, utbrenning, etterkjøring). Endringer fra Homey sendes fortsatt umiddelbart. Kortere gir mer live verdier, men bruker mer batteri i kontrolleren."
           },
           "value": 30,
           "min": 30,
