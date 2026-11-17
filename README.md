@@ -50,14 +50,21 @@ Then add a device: **Devices -> + -> Xzense (unofficial)**, select your controll
 |---|---|---|
 | Poll interval | 60 s | How often the controller is read while idle |
 | Poll interval while burning | 30 s | How often it is read during boost, operation, burnout, afterrun |
+| Keep connection open after a change | 20 s | After a change from Homey the Bluetooth connection stays open this long, so the next change is written without reconnecting (0 = disconnect right away) |
 | Fan slider step | 5 % | Step of the slider and of the widget buttons |
 | Minimum / maximum fan speed | 10 % / 100 % | Safety limits; commands outside them are clamped |
 | Chimney alarm temperature | 220 °C | Threshold for the `alarm_heat` alarm |
 
 Changes you make from Homey (slider, boost, flow cards, widget) are **sent immediately** and never wait
 for the poll interval. The slider writes the first change at once, and if you keep dragging, the newest value
-is written over the same Bluetooth connection. After a change the app reads the controller repeatedly until the
-fan (or boost) has reached the new value, then the regular poll interval starts over.
+is written over the same Bluetooth connection. After a change the app reads the controller about every 1.5
+seconds and shows each reading as it arrives, until the fan (or boost) has reached the new value, then the
+regular poll interval starts over.
+
+Typical timing, measured on a Homey Pro 2023: the first change after the connection was closed takes about 3
+seconds to reach the controller (finding it, connecting, authenticating); further changes within the keep-open time
+reach it in about 0.1 seconds. The controller itself then takes about 6.5 seconds before it reports the new fan
+speed, so the "Fan speed (now)" value follows that delay, not the app's.
 
 ## Good to know
 

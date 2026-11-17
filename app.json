@@ -388,6 +388,24 @@
           }
         },
         {
+          "id": "keep_alive",
+          "type": "number",
+          "label": {
+            "en": "Keep connection open after a change",
+            "no": "Hold forbindelsen åpen etter en endring"
+          },
+          "hint": {
+            "en": "After a change from Homey the Bluetooth connection stays open this long, so further changes (for example dragging the slider again) take effect instantly. 0 disconnects right away. While it is open, other apps cannot connect to the controller.",
+            "no": "Etter en endring fra Homey holdes Bluetooth-forbindelsen åpen så lenge, slik at flere endringer (for eksempel å dra i slideren igjen) virker umiddelbart. 0 kobler fra med en gang. Mens den er åpen kan ikke andre apper koble til kontrolleren."
+          },
+          "value": 20,
+          "min": 0,
+          "max": 120,
+          "units": {
+            "en": "s"
+          }
+        },
+        {
           "id": "fan_step",
           "type": "number",
           "label": {
@@ -591,7 +609,7 @@
       "setable": false,
       "uiComponent": "sensor",
       "insights": true,
-      "icon": "/assets/icon.svg"
+      "icon": "/assets/signal.svg"
     },
     "xzense_state": {
       "type": "string",

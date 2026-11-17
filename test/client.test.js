@@ -3,6 +3,7 @@
 const assert = require('node:assert');
 const test = require('node:test');
 const { XzenseClient } = require('../lib/client');
+const P = require('../lib/protocol');
 
 /** A client whose "Bluetooth session" is a script, and whose waiting is free and counted. */
 function setup(statuses) {
@@ -68,7 +69,7 @@ test('a write is not repeated when the target has not changed', async () => {
 test('following the fan gives up after a bounded number of readings', async () => {
   const { client, log } = setup([fan(20)]); // the fan never reaches 50
   const result = await client.setFanSpeed(() => 50);
-  assert.strictEqual(log.reads, 8);
+  assert.strictEqual(log.reads, 14);
   assert.strictEqual(result.sent, 50);
 });
 
@@ -91,5 +92,121 @@ test('boost off: read until the controller has left Boosting', async () => {
 test('boost stops waiting after a bounded number of readings', async () => {
   const { client, log } = setup([fan(20, 4)]); // never starts boosting
   await client.setBoost(true);
-  assert.strictEqual(log.reads, 5);
+  assert.strictEqual(log.reads, 9);
+});
+
+
+// ---------------------------------------------------------------------------------------------
+// Connection handling, with a pretend controller that answers real frames
+// ---------------------------------------------------------------------------------------------
+
+function fakeController({ sendDump = true } = {}) {
+  const calls = { find: 0, connect: 0, disconnect: 0, events: [] };
+  const parser = new P.FrameParser();
+  let notify = null;
+  let fan = 20;
+  let onDisconnect = null;
+
+  const status = () => {
+    const b = Buffer.alloc(14);
+    b[0] = 4; // Operation
+    b.writeInt16LE(fan, 3);
+    b.writeInt16LE(900, 5);
+    return b;
+  };
+  const reply = (packet, verb, body = Buffer.alloc(0)) => {
+    notify(P.buildFrame(0x06, Buffer.concat([Buffer.from([packet, verb]), body])));
+  };
+  const respond = (frame) => {
+    const body = frame.applicationPayload;
+    if (frame.packetType === P.PACKET.CONNECT) {
+      reply(P.PACKET.CONNECT, P.PROTOCOL.ACK, Buffer.from([1, 0, 0, 0, 47, 0, 14, 0]));
+      if (sendDump) reply(P.PACKET.GLOBAL, P.PROTOCOL.DATA, Buffer.from([0x50, fan, 0]));
+    } else if (frame.packetType === P.PACKET.STATUS) {
+      reply(P.PACKET.STATUS, P.PROTOCOL.ACK, status());
+    } else if (frame.packetType === P.PACKET.GLOBAL) {
+      fan = body.readInt16LE(5); // session(4) id(1) value(2)
+      reply(P.PACKET.GLOBAL, P.PROTOCOL.ACK);
+    }
+  };
+
+  const characteristic = () => ({
+    async write(data) { for (const f of parser.feed(Buffer.from(data))) respond(f); },
+    async subscribeToNotifications(cb) { notify = cb; },
+    async unsubscribeFromNotifications() {},
+  });
+  const peripheral = {
+    async discoverAllServicesAndCharacteristics() {},
+    async getService() { return { getCharacteristic: async () => characteristic() }; },
+    async disconnect() { calls.disconnect += 1; calls.events.push('disconnect'); },
+    on(event, cb) { if (event === 'disconnect') onDisconnect = cb; },
+  };
+  const homey = {
+    ble: {
+      async find() {
+        calls.find += 1;
+        return { connect: async () => { calls.connect += 1; return peripheral; } };
+      },
+    },
+  };
+  return { homey, calls, dropLink: () => onDisconnect && onDisconnect() };
+}
+
+function realClient(homey) {
+  return new XzenseClient(homey, { address: 'x', pin: 'ABCD' }, () => {}, { sleep: async () => {} });
+}
+
+test('a kept-open connection is reused: the next change needs no reconnect', async () => {
+  const { homey, calls } = fakeController();
+  const client = realClient(homey);
+  await client.setFanSpeed(() => 30, { keepAliveMs: 5000 });
+  await client.setFanSpeed(() => 35, { keepAliveMs: 5000 });
+  assert.strictEqual(calls.connect, 1);
+  assert.strictEqual(calls.disconnect, 0, 'still open');
+  await client.dispose();
+  assert.strictEqual(calls.disconnect, 1);
+});
+
+test('without keep-alive every command connects and disconnects, but does not scan again', async () => {
+  const { homey, calls } = fakeController();
+  const client = realClient(homey);
+  await client.setFanSpeed(() => 30);
+  await client.setFanSpeed(() => 35);
+  assert.strictEqual(calls.connect, 2);
+  assert.strictEqual(calls.disconnect, 2);
+  assert.strictEqual(calls.find, 1, 'the advertisement is reused');
+});
+
+test('a dropped link is replaced by a new connection', async () => {
+  const { homey, calls, dropLink } = fakeController();
+  const client = realClient(homey);
+  await client.setFanSpeed(() => 30, { keepAliveMs: 5000 });
+  dropLink();
+  const result = await client.setFanSpeed(() => 35, { keepAliveMs: 0 });
+  assert.strictEqual(calls.connect, 2);
+  assert.strictEqual(result.status.fanSpeed, 35);
+});
+
+test('commands do not wait for the controller\'s GLOBAL dump', async () => {
+  const { homey } = fakeController({ sendDump: false });
+  const client = realClient(homey);
+  const started = Date.now();
+  await client.setFanSpeed(() => 30);
+  assert.ok(Date.now() - started < 500, 'a command must not wait for a dump that readings need');
+});
+
+test('a reading is delivered before the connection is closed', async () => {
+  const { homey, calls } = fakeController();
+  const client = realClient(homey);
+  await client.poll(undefined, () => calls.events.push('reading'));
+  assert.deepStrictEqual(calls.events, ['reading', 'disconnect']);
+});
+
+test('readings are delivered while the fan is still on its way', async () => {
+  const { homey } = fakeController();
+  const client = realClient(homey);
+  const seen = [];
+  await client.setFanSpeed(() => 40, { onReading: (r) => seen.push(r.status.fanSpeed) });
+  assert.ok(seen.length >= 1);
+  assert.strictEqual(seen[seen.length - 1], 40);
 });

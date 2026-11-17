@@ -46,7 +46,7 @@ class XzenseDevice extends Homey.Device {
     });
     // Boost is a picker with two choices ("Boost av" / "Boost på"); Homey highlights the current one.
     this.registerCapabilityListener('xzense_boost_mode', async (value) => {
-      await this._runCommand(() => this._client.setBoost(value === 'on'));
+      await this._runCommand(() => this._client.setBoost(value === 'on', this._commandOptions()));
     });
 
     this._schedulePoll(1000);
@@ -179,6 +179,7 @@ class XzenseDevice extends Homey.Device {
    * XzenseClient.setFanSpeed) so quick drags never queue up behind each other.
    */
   _queueFan(target) {
+    this.log(`fan: requested ${target}`);
     this._targetFan = target;
     this.setCapabilityValue('xzense_fan_setpoint', target / 100).catch(this.error);
     this._emitFanState();
@@ -191,7 +192,7 @@ class XzenseDevice extends Homey.Device {
       while (this._targetFan !== null) {
         let result;
         try {
-          result = await this._runCommand(() => this._client.setFanSpeed(() => this._targetFan));
+          result = await this._runCommand(() => this._client.setFanSpeed(() => this._targetFan, this._commandOptions()));
         } catch (err) {
           // _runCommand already logged; show the controller's real value again.
           this._targetFan = null;
@@ -216,7 +217,18 @@ class XzenseDevice extends Homey.Device {
   }
 
   async setBoost(enabled) {
-    await this._runCommand(() => this._client.setBoost(Boolean(enabled)));
+    await this._runCommand(() => this._client.setBoost(Boolean(enabled), this._commandOptions()));
+  }
+
+  /**
+   * Options for commands: every reading taken while a change takes effect is shown at once, and the
+   * Bluetooth connection is kept open for a while so the next change does not need to reconnect.
+   */
+  _commandOptions() {
+    return {
+      onReading: (reading) => this._applyReading(reading),
+      keepAliveMs: Math.max(0, Number(this.getSetting('keep_alive') ?? 20)) * 1000,
+    };
   }
 
   async _runCommand(action) {
@@ -264,8 +276,8 @@ class XzenseDevice extends Homey.Device {
   async _poll() {
     if (this._stopped) return;
     try {
-      const result = await this._client.poll();
-      await this._applyReading(result);
+      // the reading is shown as soon as it is in, before the slow Bluetooth disconnect finishes
+      await this._client.poll(undefined, (reading) => this._applyReading(reading));
       await this.setAvailable().catch(this.error);
       this._schedulePoll(this._pollIntervalMs());
     } catch (err) {
@@ -341,10 +353,12 @@ class XzenseDevice extends Homey.Device {
 
   async onDeleted() {
     this._clearTimers();
+    if (this._client) await this._client.dispose();
   }
 
   async onUninit() {
     this._clearTimers();
+    if (this._client) await this._client.dispose();
   }
 }
 
