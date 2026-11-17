@@ -1,0 +1,608 @@
+{
+  "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
+  "id": "app.xzense.unofficial",
+  "version": "0.1.0",
+  "compatibility": ">=12.2.0",
+  "sdk": 3,
+  "platforms": [
+    "local"
+  ],
+  "name": {
+    "en": "Xzense (unofficial)",
+    "no": "Xzense (uoffisiell)"
+  },
+  "description": {
+    "en": "Read and control an Xzense chimney fan controller over Bluetooth LE.",
+    "no": "Les av og styr en Xzense pipeviftekontroller over Bluetooth LE."
+  },
+  "category": [
+    "climate"
+  ],
+  "permissions": [
+    "homey:wireless:ble"
+  ],
+  "brandColor": "#C0392B",
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "author": {
+    "name": "Adrianni"
+  },
+  "source": "https://github.com/Adrianni/Xzense-homey-app",
+  "flow": {
+    "triggers": [
+      {
+        "title": {
+          "en": "State changed to",
+          "no": "Tilstand endret til"
+        },
+        "titleFormatted": {
+          "en": "State changed to [[state]]",
+          "no": "Tilstand endret til [[state]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=xzense"
+          },
+          {
+            "type": "dropdown",
+            "name": "state",
+            "values": [
+              {
+                "id": "any",
+                "label": {
+                  "en": "Any state",
+                  "no": "Hvilken som helst"
+                }
+              },
+              {
+                "id": "1",
+                "label": {
+                  "en": "Setup"
+                }
+              },
+              {
+                "id": "2",
+                "label": {
+                  "en": "Ready for lighting",
+                  "no": "Klar for tenning"
+                }
+              },
+              {
+                "id": "3",
+                "label": {
+                  "en": "Boosting"
+                }
+              },
+              {
+                "id": "4",
+                "label": {
+                  "en": "Operation",
+                  "no": "Drift"
+                }
+              },
+              {
+                "id": "5",
+                "label": {
+                  "en": "Burnout",
+                  "no": "Utbrent"
+                }
+              },
+              {
+                "id": "6",
+                "label": {
+                  "en": "Afterrun",
+                  "no": "Etterkjøring"
+                }
+              },
+              {
+                "id": "7",
+                "label": {
+                  "en": "Refueling",
+                  "no": "Etterfyring"
+                }
+              },
+              {
+                "id": "8",
+                "label": {
+                  "en": "Ventilation",
+                  "no": "Ventilasjon"
+                }
+              },
+              {
+                "id": "9",
+                "label": {
+                  "en": "Error",
+                  "no": "Feil"
+                }
+              }
+            ]
+          }
+        ],
+        "tokens": [
+          {
+            "name": "state",
+            "type": "string",
+            "title": {
+              "en": "State",
+              "no": "Tilstand"
+            },
+            "example": {
+              "en": "Operation"
+            }
+          }
+        ],
+        "id": "state_changed"
+      }
+    ],
+    "conditions": [
+      {
+        "title": {
+          "en": "State is",
+          "no": "Tilstand er"
+        },
+        "titleFormatted": {
+          "en": "State !{{is|is not}} [[state]]",
+          "no": "Tilstand !{{er|er ikke}} [[state]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=xzense"
+          },
+          {
+            "type": "dropdown",
+            "name": "state",
+            "values": [
+              {
+                "id": "1",
+                "label": {
+                  "en": "Setup"
+                }
+              },
+              {
+                "id": "2",
+                "label": {
+                  "en": "Ready for lighting",
+                  "no": "Klar for tenning"
+                }
+              },
+              {
+                "id": "3",
+                "label": {
+                  "en": "Boosting"
+                }
+              },
+              {
+                "id": "4",
+                "label": {
+                  "en": "Operation",
+                  "no": "Drift"
+                }
+              },
+              {
+                "id": "5",
+                "label": {
+                  "en": "Burnout",
+                  "no": "Utbrent"
+                }
+              },
+              {
+                "id": "6",
+                "label": {
+                  "en": "Afterrun",
+                  "no": "Etterkjøring"
+                }
+              },
+              {
+                "id": "7",
+                "label": {
+                  "en": "Refueling",
+                  "no": "Etterfyring"
+                }
+              },
+              {
+                "id": "8",
+                "label": {
+                  "en": "Ventilation",
+                  "no": "Ventilasjon"
+                }
+              },
+              {
+                "id": "9",
+                "label": {
+                  "en": "Error",
+                  "no": "Feil"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "state_is"
+      }
+    ],
+    "actions": [
+      {
+        "title": {
+          "en": "Set fan speed",
+          "no": "Sett viftehastighet"
+        },
+        "titleFormatted": {
+          "en": "Set fan speed to [[speed]]%",
+          "no": "Sett viftehastighet til [[speed]] %"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=xzense"
+          },
+          {
+            "type": "number",
+            "name": "speed",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "placeholder": {
+              "en": "20"
+            }
+          }
+        ],
+        "id": "set_fan_speed"
+      },
+      {
+        "title": {
+          "en": "Start boost",
+          "no": "Start boost"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=xzense"
+          }
+        ],
+        "id": "start_boost"
+      },
+      {
+        "title": {
+          "en": "Stop boost",
+          "no": "Stopp boost"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=xzense"
+          }
+        ],
+        "id": "stop_boost"
+      }
+    ]
+  },
+  "drivers": [
+    {
+      "name": {
+        "en": "Xzense controller",
+        "no": "Xzense kontroller"
+      },
+      "class": "fan",
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "ble"
+      ],
+      "capabilities": [
+        "xzense_fan_setpoint",
+        "xzense_boost_mode",
+        "xzense_state",
+        "measure_xzense_fan_speed",
+        "measure_temperature.chimney",
+        "measure_temperature.inside",
+        "measure_temperature.outside",
+        "measure_pressure",
+        "alarm_heat",
+        "xzense_panel_battery",
+        "xzense_signal"
+      ],
+      "capabilitiesOptions": {
+        "measure_temperature.chimney": {
+          "title": {
+            "en": "Chimney temperature",
+            "no": "Pipetemperatur"
+          }
+        },
+        "measure_temperature.inside": {
+          "title": {
+            "en": "Inside temperature",
+            "no": "Innetemperatur"
+          }
+        },
+        "measure_temperature.outside": {
+          "title": {
+            "en": "Outside temperature",
+            "no": "Utetemperatur"
+          }
+        },
+        "alarm_heat": {
+          "title": {
+            "en": "Chimney too hot",
+            "no": "Pipen for varm"
+          }
+        }
+      },
+      "images": {
+        "small": "/drivers/xzense/assets/images/small.png",
+        "large": "/drivers/xzense/assets/images/large.png",
+        "xlarge": "/drivers/xzense/assets/images/xlarge.png"
+      },
+      "pair": [
+        {
+          "id": "select_device"
+        },
+        {
+          "id": "enter_pin"
+        }
+      ],
+      "settings": [
+        {
+          "id": "poll_interval",
+          "type": "number",
+          "label": {
+            "en": "Poll interval",
+            "no": "Oppdateringsintervall"
+          },
+          "hint": {
+            "en": "Seconds between connections. The controller only accepts one Bluetooth client at a time and every connection uses its battery.",
+            "no": "Sekunder mellom hver tilkobling. Kontrolleren tillater bare én Bluetooth-klient om gangen, og hver tilkobling bruker batteri."
+          },
+          "value": 60,
+          "min": 30,
+          "max": 3600,
+          "units": {
+            "en": "s"
+          }
+        },
+        {
+          "id": "active_poll_interval",
+          "type": "number",
+          "label": {
+            "en": "Poll interval while burning",
+            "no": "Oppdateringsintervall under fyring"
+          },
+          "hint": {
+            "en": "Seconds between connections while the fireplace is running (boost, operation, burnout, afterrun). Shorter keeps the values more live but uses more controller battery.",
+            "no": "Sekunder mellom hver tilkobling mens peisen er i gang (boost, drift, utbrenning, etterkjøring). Kortere gir mer live verdier, men bruker mer batteri i kontrolleren."
+          },
+          "value": 30,
+          "min": 30,
+          "max": 600,
+          "units": {
+            "en": "s"
+          }
+        },
+        {
+          "id": "fan_step",
+          "type": "number",
+          "label": {
+            "en": "Fan slider step",
+            "no": "Steg på viftehastighet-slider"
+          },
+          "hint": {
+            "en": "How many percent the slider moves per step.",
+            "no": "Hvor mange prosent slideren flytter seg per steg."
+          },
+          "value": 5,
+          "min": 1,
+          "max": 25,
+          "units": {
+            "en": "%"
+          }
+        },
+        {
+          "id": "min_fan_speed",
+          "type": "number",
+          "label": {
+            "en": "Minimum fan speed",
+            "no": "Minste viftehastighet"
+          },
+          "hint": {
+            "en": "Safety limit: commands below this value are raised to it.",
+            "no": "Sikkerhetsgrense: kommandoer under denne verdien heves til den."
+          },
+          "value": 10,
+          "min": 0,
+          "max": 100,
+          "units": {
+            "en": "%"
+          }
+        },
+        {
+          "id": "max_fan_speed",
+          "type": "number",
+          "label": {
+            "en": "Maximum fan speed",
+            "no": "Høyeste viftehastighet"
+          },
+          "hint": {
+            "en": "Safety limit: commands above this value are lowered to it.",
+            "no": "Sikkerhetsgrense: kommandoer over denne verdien senkes til den."
+          },
+          "value": 100,
+          "min": 0,
+          "max": 100,
+          "units": {
+            "en": "%"
+          }
+        },
+        {
+          "id": "chimney_alarm_temp",
+          "type": "number",
+          "label": {
+            "en": "Chimney alarm temperature",
+            "no": "Alarmtemperatur pipe"
+          },
+          "hint": {
+            "en": "The 'Chimney too hot' alarm turns on at or above this temperature.",
+            "no": "Alarmen 'Pipen for varm' slår seg på ved eller over denne temperaturen."
+          },
+          "value": 220,
+          "min": 50,
+          "max": 400,
+          "units": {
+            "en": "°C"
+          }
+        }
+      ],
+      "id": "xzense"
+    }
+  ],
+  "widgets": {
+    "fan": {
+      "name": {
+        "en": "Xzense fan",
+        "no": "Xzense vifte"
+      },
+      "height": 230,
+      "settings": [
+        {
+          "id": "device",
+          "type": "autocomplete",
+          "title": {
+            "en": "Controller",
+            "no": "Kontroller"
+          },
+          "placeholder": {
+            "en": "Select Xzense controller",
+            "no": "Velg Xzense-kontroller"
+          }
+        }
+      ],
+      "api": {
+        "getState": {
+          "method": "GET",
+          "path": "/state"
+        },
+        "adjust": {
+          "method": "POST",
+          "path": "/adjust"
+        }
+      },
+      "id": "fan"
+    }
+  },
+  "capabilities": {
+    "measure_xzense_fan_speed": {
+      "type": "number",
+      "title": {
+        "en": "Fan speed (now)",
+        "no": "Viftehastighet (nå)"
+      },
+      "units": {
+        "en": "%"
+      },
+      "min": 0,
+      "max": 100,
+      "decimals": 0,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "insights": true,
+      "icon": "/assets/icon.svg"
+    },
+    "xzense_boost_mode": {
+      "type": "enum",
+      "title": {
+        "en": "Boost mode",
+        "no": "Boost-modus"
+      },
+      "values": [
+        {
+          "id": "off",
+          "title": {
+            "en": "Boost off",
+            "no": "Boost av"
+          }
+        },
+        {
+          "id": "on",
+          "title": {
+            "en": "Boost on",
+            "no": "Boost på"
+          }
+        }
+      ],
+      "getable": true,
+      "setable": true,
+      "uiComponent": "picker",
+      "icon": "/assets/icon.svg"
+    },
+    "xzense_fan_setpoint": {
+      "type": "number",
+      "title": {
+        "en": "Fan speed (set)",
+        "no": "Viftehastighet (innstilt)"
+      },
+      "units": {
+        "en": "%"
+      },
+      "min": 0,
+      "max": 1,
+      "step": 0.05,
+      "decimals": 2,
+      "getable": true,
+      "setable": true,
+      "uiComponent": "slider",
+      "insights": true,
+      "icon": "/assets/icon.svg"
+    },
+    "xzense_panel_battery": {
+      "type": "number",
+      "title": {
+        "en": "Panel battery",
+        "no": "Panelbatteri"
+      },
+      "units": {
+        "en": "%"
+      },
+      "min": 0,
+      "max": 100,
+      "decimals": 0,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "insights": true,
+      "icon": "/assets/icon.svg"
+    },
+    "xzense_signal": {
+      "type": "number",
+      "title": {
+        "en": "Signal strength (raw)",
+        "no": "Signalstyrke (rå)"
+      },
+      "decimals": 0,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "insights": true,
+      "icon": "/assets/icon.svg"
+    },
+    "xzense_state": {
+      "type": "string",
+      "title": {
+        "en": "State",
+        "no": "Tilstand"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/icon.svg"
+    }
+  }
+}

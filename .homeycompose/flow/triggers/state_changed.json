@@ -1,0 +1,26 @@
+{
+  "title": { "en": "State changed to", "no": "Tilstand endret til" },
+  "titleFormatted": { "en": "State changed to [[state]]", "no": "Tilstand endret til [[state]]" },
+  "args": [
+    { "type": "device", "name": "device", "filter": "driver_id=xzense" },
+    {
+      "type": "dropdown",
+      "name": "state",
+      "values": [
+        { "id": "any", "label": { "en": "Any state", "no": "Hvilken som helst" } },
+        { "id": "1", "label": { "en": "Setup" } },
+        { "id": "2", "label": { "en": "Ready for lighting", "no": "Klar for tenning" } },
+        { "id": "3", "label": { "en": "Boosting" } },
+        { "id": "4", "label": { "en": "Operation", "no": "Drift" } },
+        { "id": "5", "label": { "en": "Burnout", "no": "Utbrent" } },
+        { "id": "6", "label": { "en": "Afterrun", "no": "Etterkjøring" } },
+        { "id": "7", "label": { "en": "Refueling", "no": "Etterfyring" } },
+        { "id": "8", "label": { "en": "Ventilation", "no": "Ventilasjon" } },
+        { "id": "9", "label": { "en": "Error", "no": "Feil" } }
+      ]
+    }
+  ],
+  "tokens": [
+    { "name": "state", "type": "string", "title": { "en": "State", "no": "Tilstand" }, "example": { "en": "Operation" } }
+  ]
+}

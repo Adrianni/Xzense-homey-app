@@ -1,0 +1,141 @@
+<html>
+  <head>
+    <style>
+      :root { --xz-accent: #e8590c; --xz-soft: rgba(128, 128, 128, 0.16); }
+      body.homey-widget { margin: 0; padding: 12px 14px 14px; box-sizing: border-box; user-select: none; }
+      .xz { display: flex; flex-direction: column; height: 100%; }
+      .xz-top { display: flex; justify-content: space-between; align-items: center; font-size: 14px; opacity: 0.75; }
+      .xz-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; background: #9aa0a6; }
+      .xz-dot.ok { background: #2e9e5b; }
+      .xz-dot.bad { background: #d93025; }
+      .xz-main { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+      .xz-now { font-size: 64px; line-height: 1; font-weight: 700; letter-spacing: -1px; }
+      .xz-now small { font-size: 26px; font-weight: 500; margin-left: 4px; opacity: 0.7; }
+      .xz-label { font-size: 13px; opacity: 0.65; margin-top: 2px; }
+      .xz-set { font-size: 16px; margin-top: 8px; min-height: 22px; }
+      .xz-set.pending { color: var(--xz-accent); font-weight: 600; }
+      .xz-btns { display: flex; gap: 12px; }
+      .xz-btn {
+        flex: 1; height: 58px; border: 0; border-radius: 16px; background: var(--xz-soft); color: inherit;
+        font-size: 34px; font-weight: 600; line-height: 1; cursor: pointer; font-family: inherit;
+      }
+      .xz-btn:active { background: var(--xz-accent); color: #fff; }
+      .xz-btn:disabled { opacity: 0.3; cursor: default; }
+      .xz-msg { text-align: center; padding: 28px 8px; opacity: 0.8; }
+      .xz-err { color: #d93025; font-size: 13px; text-align: center; min-height: 16px; margin-bottom: 4px; }
+    </style>
+  </head>
+
+  <body class="homey-widget">
+    <div id="xz-missing" class="xz-msg" style="display: none"></div>
+
+    <div id="xz" class="xz" style="display: none">
+      <div class="xz-top">
+        <span><span id="xz-dot" class="xz-dot"></span><span id="xz-name"></span></span>
+        <span id="xz-state"></span>
+      </div>
+      <div class="xz-main">
+        <div class="xz-now"><span id="xz-now">--</span><small>%</small></div>
+        <div id="xz-label" class="xz-label"></div>
+        <div id="xz-set" class="xz-set"></div>
+      </div>
+      <div id="xz-err" class="xz-err"></div>
+      <div class="xz-btns">
+        <button id="xz-down" class="xz-btn" aria-label="Down">&minus;</button>
+        <button id="xz-up" class="xz-btn" aria-label="Up">+</button>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      var T = {
+        nb: {
+          pick: 'Velg Xzense-kontrolleren i widget-innstillingene.',
+          now: 'Viftehastighet nå',
+          set: 'Innstilt',
+          adjusting: 'Justerer til',
+          offline: 'Ikke tilkoblet',
+          unknown: 'Ukjent',
+        },
+        en: {
+          pick: 'Select the Xzense controller in the widget settings.',
+          now: 'Fan speed now',
+          set: 'Set to',
+          adjusting: 'Adjusting to',
+          offline: 'Not connected',
+          unknown: 'Unknown',
+        },
+      };
+      var lang = String(navigator.language || 'en').toLowerCase();
+      var t = T[lang.indexOf('nb') === 0 || lang.indexOf('no') === 0 || lang.indexOf('nn') === 0 ? 'nb' : 'en'];
+
+      function $(id) { return document.getElementById(id); }
+
+      function onHomeyReady(Homey) {
+        var settings = Homey.getSettings() || {};
+        var deviceId = settings.device && settings.device.id;
+        var current = null;
+
+        if (!deviceId) {
+          $('xz-missing').textContent = t.pick;
+          $('xz-missing').style.display = 'block';
+          Homey.ready({ height: 150 });
+          return;
+        }
+        $('xz').style.display = 'flex';
+        Homey.ready({ height: 230 });
+
+        function render(s) {
+          current = s;
+          $('xz-name').textContent = s.name || '';
+          $('xz-state').textContent = s.state || '';
+          $('xz-dot').className = 'xz-dot ' + (s.available ? 'ok' : 'bad');
+          $('xz-now').textContent = s.now === null || s.now === undefined ? '--' : Math.round(s.now);
+          $('xz-label').textContent = s.available ? t.now : t.offline;
+
+          var set = s.set;
+          var el = $('xz-set');
+          if (set === null || set === undefined) {
+            el.textContent = '';
+            el.className = 'xz-set';
+          } else if (s.pending || (s.now !== null && s.now !== undefined && Math.round(s.now) !== Math.round(set))) {
+            el.textContent = t.adjusting + ' ' + Math.round(set) + ' %';
+            el.className = 'xz-set pending';
+          } else {
+            el.textContent = t.set + ' ' + Math.round(set) + ' %';
+            el.className = 'xz-set';
+          }
+          $('xz-down').disabled = set === null || set === undefined || set <= s.min;
+          $('xz-up').disabled = set === null || set === undefined || set >= s.max;
+        }
+
+        function showError(err) {
+          $('xz-err').textContent = (err && err.message) || String(err || '');
+          setTimeout(function () { $('xz-err').textContent = ''; }, 6000);
+        }
+
+        function refresh() {
+          Homey.api('GET', '/state?deviceId=' + encodeURIComponent(deviceId), {})
+            .then(render)
+            .catch(showError);
+        }
+
+        function adjust(direction) {
+          Homey.api('POST', '/adjust', { deviceId: deviceId, direction: direction })
+            .then(render)
+            .catch(showError);
+        }
+
+        $('xz-up').addEventListener('click', function () { adjust('up'); });
+        $('xz-down').addEventListener('click', function () { adjust('down'); });
+
+        // Live updates pushed by the app after every reading or button press.
+        Homey.on('xzense.fan', function (s) {
+          if (s && s.id === deviceId) render(s);
+        });
+
+        refresh();
+        setInterval(refresh, 10000); // safety net in case a realtime event is missed
+      }
+    </script>
+  </body>
+</html>

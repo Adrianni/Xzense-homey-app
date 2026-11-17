@@ -1,0 +1,31 @@
+{
+  "name": {
+    "en": "Xzense fan",
+    "no": "Xzense vifte"
+  },
+  "height": 230,
+  "settings": [
+    {
+      "id": "device",
+      "type": "autocomplete",
+      "title": {
+        "en": "Controller",
+        "no": "Kontroller"
+      },
+      "placeholder": {
+        "en": "Select Xzense controller",
+        "no": "Velg Xzense-kontroller"
+      }
+    }
+  ],
+  "api": {
+    "getState": {
+      "method": "GET",
+      "path": "/state"
+    },
+    "adjust": {
+      "method": "POST",
+      "path": "/adjust"
+    }
+  }
+}

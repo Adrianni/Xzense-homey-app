@@ -1,0 +1,24 @@
+{
+  "pair": {
+    "title": "Xzense PIN",
+    "select_title": "Select controller",
+    "select_help": "Select your Xzense controller. Several controllers nearby? The stronger signal (closer to 0 dBm) is the one nearest to Homey.",
+    "searching": "Searching for Xzense controllers...",
+    "none_found": "No Xzense controller found. Move Homey closer, make sure no other app is connected to it, and search again.",
+    "rescan": "Search again",
+    "chosen": "Selected controller:",
+    "pin_help": "Enter the 4-character PIN of your Xzense controller (digits 0-9 and letters A-F).",
+    "connect": "Connect",
+    "connecting": "Connecting...",
+    "invalid_pin": "The PIN must be 4 characters: 0-9 and A-F.",
+    "bad_pin": "The controller rejected the PIN. Check the PIN and try again.",
+    "no_contact": "Could not talk to the controller. Move Homey closer and make sure no other app is connected to it.",
+    "not_in_list": "Select a controller from the list first.",
+    "progress_find": "Looking for the controller...",
+    "progress_connect": "Opening Bluetooth connection...",
+    "progress_services": "Finding services...",
+    "progress_auth": "Sending PIN...",
+    "progress_read": "Reading status...",
+    "progress_done": "Connected! Adding device..."
+  }
+}

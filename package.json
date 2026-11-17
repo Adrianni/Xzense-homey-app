@@ -1,0 +1,14 @@
+{
+  "name": "app.xzense.unofficial",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Unofficial Homey app for the Xzense chimney fan controller (Bluetooth LE)",
+  "scripts": {
+    "test": "node --test test/protocol.test.js"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Adrianni/Xzense-homey-app.git"
+  }
+}

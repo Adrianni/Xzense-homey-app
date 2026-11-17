@@ -1,0 +1,175 @@
+{
+  "name": {
+    "en": "Xzense controller",
+    "no": "Xzense kontroller"
+  },
+  "class": "fan",
+  "platforms": [
+    "local"
+  ],
+  "connectivity": [
+    "ble"
+  ],
+  "capabilities": [
+    "xzense_fan_setpoint",
+    "xzense_boost_mode",
+    "xzense_state",
+    "measure_xzense_fan_speed",
+    "measure_temperature.chimney",
+    "measure_temperature.inside",
+    "measure_temperature.outside",
+    "measure_pressure",
+    "alarm_heat",
+    "xzense_panel_battery",
+    "xzense_signal"
+  ],
+  "capabilitiesOptions": {
+    "measure_temperature.chimney": {
+      "title": {
+        "en": "Chimney temperature",
+        "no": "Pipetemperatur"
+      }
+    },
+    "measure_temperature.inside": {
+      "title": {
+        "en": "Inside temperature",
+        "no": "Innetemperatur"
+      }
+    },
+    "measure_temperature.outside": {
+      "title": {
+        "en": "Outside temperature",
+        "no": "Utetemperatur"
+      }
+    },
+    "alarm_heat": {
+      "title": {
+        "en": "Chimney too hot",
+        "no": "Pipen for varm"
+      }
+    }
+  },
+  "images": {
+    "small": "/drivers/xzense/assets/images/small.png",
+    "large": "/drivers/xzense/assets/images/large.png",
+    "xlarge": "/drivers/xzense/assets/images/xlarge.png"
+  },
+  "pair": [
+    {
+      "id": "select_device"
+    },
+    {
+      "id": "enter_pin"
+    }
+  ],
+  "settings": [
+    {
+      "id": "poll_interval",
+      "type": "number",
+      "label": {
+        "en": "Poll interval",
+        "no": "Oppdateringsintervall"
+      },
+      "hint": {
+        "en": "Seconds between connections. The controller only accepts one Bluetooth client at a time and every connection uses its battery.",
+        "no": "Sekunder mellom hver tilkobling. Kontrolleren tillater bare én Bluetooth-klient om gangen, og hver tilkobling bruker batteri."
+      },
+      "value": 60,
+      "min": 30,
+      "max": 3600,
+      "units": {
+        "en": "s"
+      }
+    },
+    {
+      "id": "active_poll_interval",
+      "type": "number",
+      "label": {
+        "en": "Poll interval while burning",
+        "no": "Oppdateringsintervall under fyring"
+      },
+      "hint": {
+        "en": "Seconds between connections while the fireplace is running (boost, operation, burnout, afterrun). Shorter keeps the values more live but uses more controller battery.",
+        "no": "Sekunder mellom hver tilkobling mens peisen er i gang (boost, drift, utbrenning, etterkjøring). Kortere gir mer live verdier, men bruker mer batteri i kontrolleren."
+      },
+      "value": 30,
+      "min": 30,
+      "max": 600,
+      "units": {
+        "en": "s"
+      }
+    },
+    {
+      "id": "fan_step",
+      "type": "number",
+      "label": {
+        "en": "Fan slider step",
+        "no": "Steg på viftehastighet-slider"
+      },
+      "hint": {
+        "en": "How many percent the slider moves per step.",
+        "no": "Hvor mange prosent slideren flytter seg per steg."
+      },
+      "value": 5,
+      "min": 1,
+      "max": 25,
+      "units": {
+        "en": "%"
+      }
+    },
+    {
+      "id": "min_fan_speed",
+      "type": "number",
+      "label": {
+        "en": "Minimum fan speed",
+        "no": "Minste viftehastighet"
+      },
+      "hint": {
+        "en": "Safety limit: commands below this value are raised to it.",
+        "no": "Sikkerhetsgrense: kommandoer under denne verdien heves til den."
+      },
+      "value": 10,
+      "min": 0,
+      "max": 100,
+      "units": {
+        "en": "%"
+      }
+    },
+    {
+      "id": "max_fan_speed",
+      "type": "number",
+      "label": {
+        "en": "Maximum fan speed",
+        "no": "Høyeste viftehastighet"
+      },
+      "hint": {
+        "en": "Safety limit: commands above this value are lowered to it.",
+        "no": "Sikkerhetsgrense: kommandoer over denne verdien senkes til den."
+      },
+      "value": 100,
+      "min": 0,
+      "max": 100,
+      "units": {
+        "en": "%"
+      }
+    },
+    {
+      "id": "chimney_alarm_temp",
+      "type": "number",
+      "label": {
+        "en": "Chimney alarm temperature",
+        "no": "Alarmtemperatur pipe"
+      },
+      "hint": {
+        "en": "The 'Chimney too hot' alarm turns on at or above this temperature.",
+        "no": "Alarmen 'Pipen for varm' slår seg på ved eller over denne temperaturen."
+      },
+      "value": 220,
+      "min": 50,
+      "max": 400,
+      "units": {
+        "en": "°C"
+      }
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "id": "app.xzense.unofficial",
+  "version": "0.1.0",
+  "compatibility": ">=12.2.0",
+  "sdk": 3,
+  "platforms": [
+    "local"
+  ],
+  "name": {
+    "en": "Xzense (unofficial)",
+    "no": "Xzense (uoffisiell)"
+  },
+  "description": {
+    "en": "Read and control an Xzense chimney fan controller over Bluetooth LE.",
+    "no": "Les av og styr en Xzense pipeviftekontroller over Bluetooth LE."
+  },
+  "category": [
+    "climate"
+  ],
+  "permissions": [
+    "homey:wireless:ble"
+  ],
+  "brandColor": "#C0392B",
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "author": {
+    "name": "Adrianni"
+  },
+  "source": "https://github.com/Adrianni/Xzense-homey-app"
+}

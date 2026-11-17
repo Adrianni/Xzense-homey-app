@@ -1,0 +1,19 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Fan speed (set)",
+    "no": "Viftehastighet (innstilt)"
+  },
+  "units": {
+    "en": "%"
+  },
+  "min": 0,
+  "max": 1,
+  "step": 0.05,
+  "decimals": 2,
+  "getable": true,
+  "setable": true,
+  "uiComponent": "slider",
+  "insights": true,
+  "icon": "/assets/icon.svg"
+}

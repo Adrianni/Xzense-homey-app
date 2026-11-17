@@ -1,0 +1,75 @@
+<style>
+  .xz-sel { padding: 16px; }
+  .xz-sel p { margin: 8px 0 16px; }
+  #xz-list { list-style: none; margin: 0; padding: 0; }
+  #xz-list li {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 12px; margin-bottom: 8px; border: 1px solid #999; border-radius: 8px; cursor: pointer;
+  }
+  #xz-list li:active { background: rgba(128, 128, 128, 0.2); }
+  .xz-name { font-weight: bold; }
+  .xz-meta { opacity: 0.7; font-size: 0.85em; text-align: right; }
+  #xz-status { min-height: 1.5em; margin: 12px 0; }
+  #xz-error { color: #c0392b; }
+</style>
+
+<div class="xz-sel">
+  <p data-i18n="pair.select_help">Select your Xzense controller. Several controllers nearby? The stronger signal (closer to 0 dBm) is the one nearest to Homey.</p>
+  <div id="xz-status"></div>
+  <ul id="xz-list"></ul>
+  <p id="xz-error"></p>
+  <button id="xz-rescan" class="hy-button-secondary" data-i18n="pair.rescan">Search again</button>
+</div>
+
+<script type="text/javascript">
+  Homey.setTitle(Homey.__('pair.select_title'));
+
+  var list = document.getElementById('xz-list');
+  var statusEl = document.getElementById('xz-status');
+  var errorEl = document.getElementById('xz-error');
+  var rescan = document.getElementById('xz-rescan');
+
+  function render(devices) {
+    list.innerHTML = '';
+    if (!devices.length) {
+      statusEl.textContent = Homey.__('pair.none_found');
+      return;
+    }
+    statusEl.textContent = '';
+    devices.forEach(function (d) {
+      var li = document.createElement('li');
+      var name = document.createElement('span');
+      name.className = 'xz-name';
+      name.textContent = d.name;
+      var meta = document.createElement('span');
+      meta.className = 'xz-meta';
+      meta.textContent = (d.rssi !== null && d.rssi !== undefined ? d.rssi + ' dBm' : '') + ' · ' + d.shortId;
+      li.appendChild(name);
+      li.appendChild(meta);
+      li.addEventListener('click', function () {
+        Homey.emit('select_device', d.uuid).then(function () {
+          Homey.showView('enter_pin');
+        }).catch(function (err) {
+          errorEl.textContent = (err && err.message) || String(err);
+        });
+      });
+      list.appendChild(li);
+    });
+  }
+
+  function scan() {
+    errorEl.textContent = '';
+    list.innerHTML = '';
+    statusEl.textContent = Homey.__('pair.searching');
+    rescan.disabled = true;
+    Homey.emit('discover').then(render).catch(function (err) {
+      statusEl.textContent = '';
+      errorEl.textContent = (err && err.message) || String(err);
+    }).then(function () {
+      rescan.disabled = false;
+    });
+  }
+
+  rescan.addEventListener('click', scan);
+  scan();
+</script>

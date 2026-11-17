@@ -1,0 +1,27 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Boost mode",
+    "no": "Boost-modus"
+  },
+  "values": [
+    {
+      "id": "off",
+      "title": {
+        "en": "Boost off",
+        "no": "Boost av"
+      }
+    },
+    {
+      "id": "on",
+      "title": {
+        "en": "Boost on",
+        "no": "Boost på"
+      }
+    }
+  ],
+  "getable": true,
+  "setable": true,
+  "uiComponent": "picker",
+  "icon": "/assets/icon.svg"
+}

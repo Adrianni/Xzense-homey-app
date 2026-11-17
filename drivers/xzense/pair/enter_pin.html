@@ -1,0 +1,104 @@
+<style>
+  .xz-pin { text-align: center; padding: 24px 16px; }
+  .xz-pin input {
+    font-size: 36px; letter-spacing: 10px; text-align: center; text-transform: uppercase;
+    width: 100%; max-width: 12em; box-sizing: border-box; padding: 12px; border: 2px solid #999; border-radius: 12px;
+  }
+  .xz-pin p { margin: 12px 0; }
+  #xz-chosen { font-weight: bold; }
+  #xz-next {
+    display: block; width: 100%; box-sizing: border-box; margin: 20px 0 0;
+    padding: 20px 16px; font-size: 22px; font-weight: bold; border-radius: 14px; min-height: 64px;
+  }
+  #xz-next:disabled { opacity: 0.6; }
+  #xz-progress { display: none; align-items: center; justify-content: center; margin: 20px 0 0; font-size: 18px; }
+  #xz-progress.on { display: flex; }
+  .xz-spin {
+    width: 22px; height: 22px; margin-right: 12px; border: 3px solid rgba(128,128,128,0.4);
+    border-top-color: #c0392b; border-radius: 50%; animation: xzspin 0.9s linear infinite;
+  }
+  @keyframes xzspin { to { transform: rotate(360deg); } }
+  #xz-error { color: #c0392b; min-height: 1.5em; font-size: 16px; }
+</style>
+
+<div class="xz-pin">
+  <p><span data-i18n="pair.chosen">Selected controller:</span> <span id="xz-chosen"></span></p>
+  <p data-i18n="pair.pin_help">Enter the 4-character PIN of your Xzense controller (digits 0-9 and letters A-F).</p>
+  <input id="xz-pin" type="text" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false" />
+  <p id="xz-error"></p>
+  <div id="xz-progress"><div class="xz-spin"></div><span id="xz-progress-text"></span></div>
+  <button id="xz-next" class="hy-button-primary" data-i18n="pair.connect">Connect</button>
+</div>
+
+<script type="text/javascript">
+  Homey.setTitle(Homey.__('pair.title'));
+
+  var input = document.getElementById('xz-pin');
+  var error = document.getElementById('xz-error');
+  var button = document.getElementById('xz-next');
+  var progressBox = document.getElementById('xz-progress');
+  var progressText = document.getElementById('xz-progress-text');
+
+  var stepText = '';
+  var startedAt = 0;
+  var ticker = null;
+
+  function showProgress() {
+    var seconds = Math.floor((Date.now() - startedAt) / 1000);
+    progressText.textContent = stepText + ' (' + seconds + ' s)';
+  }
+
+  function startProgress(text) {
+    stepText = text;
+    startedAt = Date.now();
+    progressBox.className = 'on';
+    showProgress();
+    ticker = setInterval(showProgress, 500);
+  }
+
+  function stopProgress() {
+    clearInterval(ticker);
+    ticker = null;
+    progressBox.className = '';
+  }
+
+  // Live status pushed from the driver while it talks to the controller.
+  Homey.on('progress', function (step) {
+    stepText = Homey.__('pair.progress_' + step);
+    showProgress();
+  });
+
+  Homey.emit('get_selected').then(function (name) {
+    document.getElementById('xz-chosen').textContent = name || '';
+  });
+
+  function submit() {
+    var pin = input.value.trim().toUpperCase();
+    error.textContent = '';
+    if (!/^[0-9A-F]{4}$/.test(pin)) {
+      error.textContent = Homey.__('pair.invalid_pin');
+      return;
+    }
+    button.disabled = true;
+    input.disabled = true;
+    startProgress(Homey.__('pair.connecting'));
+    // The PIN is only sent to the controller selected on the previous screen.
+    Homey.emit('set_pin', pin).then(function (device) {
+      stepText = Homey.__('pair.progress_done');
+      showProgress();
+      return Homey.createDevice(device);
+    }).then(function () {
+      stopProgress();
+      Homey.done();
+    }).catch(function (err) {
+      stopProgress();
+      button.disabled = false;
+      input.disabled = false;
+      error.textContent = (err && err.message) || String(err);
+    });
+  }
+
+  button.addEventListener('click', submit);
+  input.addEventListener('keydown', function (e) { if (e.key === 'Enter') submit(); });
+  input.focus();
+</script>

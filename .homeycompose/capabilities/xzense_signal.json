@@ -1,0 +1,10 @@
+{
+  "type": "number",
+  "title": { "en": "Signal strength (raw)", "no": "Signalstyrke (rå)" },
+  "decimals": 0,
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "insights": true,
+  "icon": "/assets/icon.svg"
+}

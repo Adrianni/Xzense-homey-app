@@ -1,0 +1,24 @@
+{
+  "pair": {
+    "title": "Xzense PIN",
+    "select_title": "Velg kontroller",
+    "select_help": "Velg Xzense-kontrolleren din. Flere kontrollere i nærheten? Sterkest signal (nærmest 0 dBm) er den som står nærmest Homey.",
+    "searching": "Søker etter Xzense-kontrollere...",
+    "none_found": "Fant ingen Xzense-kontroller. Flytt Homey nærmere, sørg for at ingen andre apper er koblet til den, og søk igjen.",
+    "rescan": "Søk igjen",
+    "chosen": "Valgt kontroller:",
+    "pin_help": "Skriv inn PIN-koden på 4 tegn til Xzense-kontrolleren (sifre 0-9 og bokstaver A-F).",
+    "connect": "Koble til",
+    "connecting": "Kobler til...",
+    "invalid_pin": "PIN-koden må være 4 tegn: 0-9 og A-F.",
+    "bad_pin": "Kontrolleren avviste PIN-koden. Sjekk PIN-koden og prøv igjen.",
+    "no_contact": "Fikk ikke kontakt med kontrolleren. Flytt Homey nærmere og sørg for at ingen andre apper er koblet til den.",
+    "not_in_list": "Velg en kontroller fra listen først.",
+    "progress_find": "Leter etter kontrolleren...",
+    "progress_connect": "Åpner Bluetooth-forbindelse...",
+    "progress_services": "Finner tjenester...",
+    "progress_auth": "Sender PIN...",
+    "progress_read": "Leser status...",
+    "progress_done": "Tilkoblet! Legger til enhet..."
+  }
+}
