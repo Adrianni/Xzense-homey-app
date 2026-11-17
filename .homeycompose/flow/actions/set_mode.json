@@ -1,0 +1,48 @@
+{
+  "title": {
+    "en": "Set boost / ventilation",
+    "no": "Sett boost / ventilasjon"
+  },
+  "titleFormatted": {
+    "en": "Set mode to [[mode]]",
+    "no": "Sett modus til [[mode]]"
+  },
+  "hint": {
+    "en": "Boost and ventilation exclude each other: the one that is running is stopped before the new one starts.",
+    "no": "Boost og ventilasjon utelukker hverandre: det som går stoppes før det nye starter."
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=xzense"
+    },
+    {
+      "type": "dropdown",
+      "name": "mode",
+      "values": [
+        {
+          "id": "off",
+          "label": {
+            "en": "Off",
+            "no": "Av"
+          }
+        },
+        {
+          "id": "boost",
+          "label": {
+            "en": "Boost",
+            "no": "Boost"
+          }
+        },
+        {
+          "id": "ventilation",
+          "label": {
+            "en": "Ventilation",
+            "no": "Ventilasjon"
+          }
+        }
+      ]
+    }
+  ]
+}

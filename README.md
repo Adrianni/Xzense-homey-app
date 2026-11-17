@@ -14,11 +14,14 @@ Bluetooth Low Energy, using the Homey Pro's built-in Bluetooth.
 ## What it does
 
 - **Fan speed:** a slider for the set fan speed, and a live sensor for the actual fan speed.
-- **Boost:** a two-choice picker (off / on).
+- **Boost / ventilation:** one picker with three choices: Off, Boost, Ventilation. Boost and ventilation exclude
+  each other: switching stops whichever is running, waits until the controller reports that it has ended, and
+  only then starts the new one. If the old mode does not end, nothing new is started.
 - **Sensors:** state (Ready, Boosting, Operation, Burnout, Afterrun, ...), chimney, inside and outside
   temperature, air pressure, panel battery and signal strength (the last two are inferred values).
 - **Chimney alarm:** `alarm_heat` turns on at a temperature you choose (default 220 °C).
-- **Flow cards:** set fan speed, start/stop boost, "state is" condition, "state changed to" trigger.
+- **Flow cards:** set fan speed, set boost / ventilation (off, boost or ventilation), "state is" condition,
+  "state changed to" trigger.
 - **Dashboard widget:** a big live fan-speed number with large - and + buttons.
 - **Pairing:** shows the Xzense controllers nearby (with signal strength) so you pick the right one before
   you enter its PIN. The PIN is only sent to the controller you selected.
@@ -73,6 +76,9 @@ speed, so the "Fan speed (now)" value follows that delay, not the app's.
 - The app connects briefly on each poll instead of staying connected, which spares the controller's battery.
 - A wrong PIN is tried once and the app then stops polling, because the controller may lock out repeated
   failures. Remove and re-add the device with the right PIN.
+- **Ventilation is not yet confirmed on a real controller.** Its start/stop message follows the published protocol
+  notes and is covered by unit tests against reference frames, but nobody has verified it on hardware. The controller
+  answers ACK or NACK and decides whether ventilation is allowed in its current state; a refusal is shown as an error.
 - Tested with a single controller only. Registers marked "inferred" in `lib/protocol.js` are best guesses,
   and other controller software versions may behave differently.
 - Homey's own UI limits what the device screen can show: a slider has no label, and buttons and sensors live on

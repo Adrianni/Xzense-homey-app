@@ -73,28 +73,73 @@ test('following the fan gives up after a bounded number of readings', async () =
   assert.strictEqual(result.sent, 50);
 });
 
-test('boost on: read until the controller reports Boosting', async () => {
-  const { client, log } = setup([fan(20, 4), fan(20, 4), fan(100, 3)]);
-  const result = await client.setBoost(true);
-  assert.deepStrictEqual(log.boosts, [true]);
-  assert.strictEqual(log.reads, 3);
+/** Scripted controller for mode changes: records the order of the commands that were sent. */
+function modeSetup(states) {
+  const order = [];
+  const session = {
+    globals: {},
+    status: null,
+    async setBoost(on) { order.push(`boost:${on}`); },
+    async setVentilation(on) { order.push(`ventilation:${on}`); },
+    async readStatus() {
+      const state = states.length > 1 ? states.shift() : states[0];
+      order.push(`read:${state}`);
+      return { deviceState: state, fanSpeed: 0 };
+    },
+  };
+  const client = new XzenseClient({}, { address: 'x', pin: 'ABCD' }, () => {}, { sleep: async () => {} });
+  client.withSession = (fn) => fn(session);
+  return { client, order };
+}
+const commands = (order) => order.filter((o) => !o.startsWith('read:'));
+
+test('off -> boost: boost is started and followed until the controller reports Boosting', async () => {
+  const { client, order } = modeSetup([4, 4, 3]);
+  const result = await client.setMode('boost');
+  assert.deepStrictEqual(commands(order), ['boost:true']);
   assert.strictEqual(result.status.deviceState, 3);
 });
 
-test('boost off: read until the controller has left Boosting', async () => {
-  const { client, log } = setup([fan(100, 3), fan(100, 3), fan(20, 4)]);
-  const result = await client.setBoost(false);
-  assert.deepStrictEqual(log.boosts, [false]);
-  assert.strictEqual(log.reads, 3);
-  assert.strictEqual(result.status.deviceState, 4);
+test('off -> ventilation: ventilation is started and followed', async () => {
+  const { client, order } = modeSetup([2, 2, 8]);
+  const result = await client.setMode('ventilation');
+  assert.deepStrictEqual(commands(order), ['ventilation:true']);
+  assert.strictEqual(result.status.deviceState, 8);
 });
 
-test('boost stops waiting after a bounded number of readings', async () => {
-  const { client, log } = setup([fan(20, 4)]); // never starts boosting
-  await client.setBoost(true);
-  assert.strictEqual(log.reads, 9);
+test('boost -> ventilation: boost is stopped first, ventilation starts only after boost has ended', async () => {
+  const { client, order } = modeSetup([3, 3, 2, 8]);
+  await client.setMode('ventilation');
+  assert.deepStrictEqual(commands(order), ['boost:false', 'ventilation:true']);
+  const stop = order.indexOf('boost:false');
+  const start = order.indexOf('ventilation:true');
+  assert.ok(order.slice(stop, start).includes('read:2'), 'waited for the controller to leave Boosting');
 });
 
+test('ventilation -> boost: ventilation is stopped first', async () => {
+  const { client, order } = modeSetup([8, 2, 2, 3]);
+  await client.setMode('boost');
+  assert.deepStrictEqual(commands(order), ['ventilation:false', 'boost:true']);
+});
+
+test('ventilation -> off: only ventilation is stopped, nothing is started', async () => {
+  const { client, order } = modeSetup([8, 8, 2]);
+  const result = await client.setMode('off');
+  assert.deepStrictEqual(commands(order), ['ventilation:false']);
+  assert.strictEqual(result.status.deviceState, 2);
+});
+
+test('nothing is sent when the controller is already in the wanted mode', async () => {
+  const { client, order } = modeSetup([8]);
+  await client.setMode('ventilation');
+  assert.deepStrictEqual(commands(order), []);
+});
+
+test('the new mode is never started if the old one does not stop', async () => {
+  const { client, order } = modeSetup([3]); // keeps reporting Boosting
+  await assert.rejects(() => client.setMode('ventilation'), (err) => err.code === 'NOT_STOPPED');
+  assert.deepStrictEqual(commands(order), ['boost:false']);
+});
 
 // ---------------------------------------------------------------------------------------------
 // Connection handling, with a pretend controller that answers real frames

@@ -1,0 +1,34 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Boost / ventilation",
+    "no": "Boost / ventilasjon"
+  },
+  "values": [
+    {
+      "id": "off",
+      "title": {
+        "en": "Off",
+        "no": "Av"
+      }
+    },
+    {
+      "id": "boost",
+      "title": {
+        "en": "Boost",
+        "no": "Boost"
+      }
+    },
+    {
+      "id": "ventilation",
+      "title": {
+        "en": "Ventilation",
+        "no": "Ventilasjon"
+      }
+    }
+  ],
+  "getable": true,
+  "setable": true,
+  "uiComponent": "picker",
+  "icon": "/assets/icon.svg"
+}

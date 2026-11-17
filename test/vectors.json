@@ -8,5 +8,7 @@
   "global_neg": "230b000006060b635fdb4e50ffff82a124",
   "global_escape_value": "230b000006060b040302015027a327a41b7f24",
   "boost_on": "230b000006080b635fdb4e01eb004c6a24",
-  "boost_off": "230b000006080b635fdb4e00eb007c5d24"
+  "boost_off": "230b000006080b635fdb4e00eb007c5d24",
+  "ventilation_on": "2309000006090b635fdb4e018b8d24",
+  "ventilation_off": "2309000006090b0027a327a727a400311524"
 }

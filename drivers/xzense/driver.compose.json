@@ -12,7 +12,7 @@
   ],
   "capabilities": [
     "xzense_fan_setpoint",
-    "xzense_boost_mode",
+    "xzense_mode",
     "xzense_state",
     "measure_xzense_fan_speed",
     "measure_temperature.chimney",

@@ -257,31 +257,52 @@
       },
       {
         "title": {
-          "en": "Start boost",
-          "no": "Start boost"
+          "en": "Set boost / ventilation",
+          "no": "Sett boost / ventilasjon"
+        },
+        "titleFormatted": {
+          "en": "Set mode to [[mode]]",
+          "no": "Sett modus til [[mode]]"
+        },
+        "hint": {
+          "en": "Boost and ventilation exclude each other: the one that is running is stopped before the new one starts.",
+          "no": "Boost og ventilasjon utelukker hverandre: det som går stoppes før det nye starter."
         },
         "args": [
           {
             "type": "device",
             "name": "device",
             "filter": "driver_id=xzense"
-          }
-        ],
-        "id": "start_boost"
-      },
-      {
-        "title": {
-          "en": "Stop boost",
-          "no": "Stopp boost"
-        },
-        "args": [
+          },
           {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=xzense"
+            "type": "dropdown",
+            "name": "mode",
+            "values": [
+              {
+                "id": "off",
+                "label": {
+                  "en": "Off",
+                  "no": "Av"
+                }
+              },
+              {
+                "id": "boost",
+                "label": {
+                  "en": "Boost",
+                  "no": "Boost"
+                }
+              },
+              {
+                "id": "ventilation",
+                "label": {
+                  "en": "Ventilation",
+                  "no": "Ventilasjon"
+                }
+              }
+            ]
           }
         ],
-        "id": "stop_boost"
+        "id": "set_mode"
       }
     ]
   },
@@ -300,7 +321,7 @@
       ],
       "capabilities": [
         "xzense_fan_setpoint",
-        "xzense_boost_mode",
+        "xzense_mode",
         "xzense_state",
         "measure_xzense_fan_speed",
         "measure_temperature.chimney",
@@ -534,33 +555,6 @@
       "insights": true,
       "icon": "/assets/icon.svg"
     },
-    "xzense_boost_mode": {
-      "type": "enum",
-      "title": {
-        "en": "Boost mode",
-        "no": "Boost-modus"
-      },
-      "values": [
-        {
-          "id": "off",
-          "title": {
-            "en": "Boost off",
-            "no": "Boost av"
-          }
-        },
-        {
-          "id": "on",
-          "title": {
-            "en": "Boost on",
-            "no": "Boost på"
-          }
-        }
-      ],
-      "getable": true,
-      "setable": true,
-      "uiComponent": "picker",
-      "icon": "/assets/icon.svg"
-    },
     "xzense_fan_setpoint": {
       "type": "number",
       "title": {
@@ -578,6 +572,40 @@
       "setable": true,
       "uiComponent": "slider",
       "insights": true,
+      "icon": "/assets/icon.svg"
+    },
+    "xzense_mode": {
+      "type": "enum",
+      "title": {
+        "en": "Boost / ventilation",
+        "no": "Boost / ventilasjon"
+      },
+      "values": [
+        {
+          "id": "off",
+          "title": {
+            "en": "Off",
+            "no": "Av"
+          }
+        },
+        {
+          "id": "boost",
+          "title": {
+            "en": "Boost",
+            "no": "Boost"
+          }
+        },
+        {
+          "id": "ventilation",
+          "title": {
+            "en": "Ventilation",
+            "no": "Ventilasjon"
+          }
+        }
+      ],
+      "getable": true,
+      "setable": true,
+      "uiComponent": "picker",
       "icon": "/assets/icon.svg"
     },
     "xzense_panel_battery": {

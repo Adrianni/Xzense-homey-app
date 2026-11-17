@@ -7,11 +7,8 @@ class XzenseApp extends Homey.App {
     this.homey.flow.getActionCard('set_fan_speed').registerRunListener(
       async ({ device, speed }) => device.setFanSpeed(speed),
     );
-    this.homey.flow.getActionCard('start_boost').registerRunListener(
-      async ({ device }) => device.setBoost(true),
-    );
-    this.homey.flow.getActionCard('stop_boost').registerRunListener(
-      async ({ device }) => device.setBoost(false),
+    this.homey.flow.getActionCard('set_mode').registerRunListener(
+      async ({ device, mode }) => device.setMode(mode),
     );
 
     this.homey.flow.getConditionCard('state_is').registerRunListener(

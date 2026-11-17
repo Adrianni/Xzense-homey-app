@@ -18,6 +18,8 @@ test('frames match the recorded reference bytes', () => {
   assert.strictEqual(hex(P.buildGlobalRequest(0x01020304, 0x50, 0x2423)), vectors.global_escape_value);
   assert.strictEqual(hex(P.buildBoostRequest(0x4edb5f63, true, 235)), vectors.boost_on);
   assert.strictEqual(hex(P.buildBoostRequest(0x4edb5f63, false, 235)), vectors.boost_off);
+  assert.strictEqual(hex(P.buildVentilationRequest(0x4edb5f63, true)), vectors.ventilation_on);
+  assert.strictEqual(hex(P.buildVentilationRequest(0x24272300, false)), vectors.ventilation_off);
 });
 
 test('parser round-trips frames, also when fragmented byte by byte', () => {
@@ -95,4 +97,10 @@ test('GLOBAL/DATA decoding (live dump excerpt)', () => {
   const [f] = new P.FrameParser().feed(controllerFrame(P.PACKET.GLOBAL, P.PROTOCOL.DATA, entries));
   const g = P.decodeGlobals(f, 0x1234);
   assert.deepStrictEqual(g, { 4: 57, 31: 40, 80: 20, 30: 1836 });
+});
+
+test('boost and ventilation are mutually exclusive modes derived from the controller state', () => {
+  assert.strictEqual(P.modeFromState(3), 'boost');
+  assert.strictEqual(P.modeFromState(8), 'ventilation');
+  for (const idle of [0, 1, 2, 4, 5, 6, 7, 9, 10]) assert.strictEqual(P.modeFromState(idle), 'off');
 });

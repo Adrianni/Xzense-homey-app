@@ -1,4 +1,0 @@
-{
-  "title": { "en": "Stop boost", "no": "Stopp boost" },
-  "args": [{ "type": "device", "name": "device", "filter": "driver_id=xzense" }]
-}

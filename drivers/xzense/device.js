@@ -6,7 +6,7 @@ const P = require('../../lib/protocol');
 
 const RETRY_DELAY_MS = 30000;
 
-const REQUIRED_CAPABILITIES = ['xzense_fan_setpoint', 'measure_xzense_fan_speed', 'xzense_boost_mode'];
+const REQUIRED_CAPABILITIES = ['xzense_fan_setpoint', 'measure_xzense_fan_speed', 'xzense_mode'];
 
 // Order of the sensors on the device's sensor tab: Homey lists them in the order they were added.
 const SENSOR_ORDER = [
@@ -44,9 +44,10 @@ class XzenseDevice extends Homey.Device {
       // Fire and forget: the command goes out immediately, failures are shown as a warning on the device.
       this._queueFan(this._clampFanSpeed(Math.round(Number(value) * 100))).catch(() => {});
     });
-    // Boost is a picker with two choices ("Boost av" / "Boost på"); Homey highlights the current one.
-    this.registerCapabilityListener('xzense_boost_mode', async (value) => {
-      await this._runCommand(() => this._client.setBoost(value === 'on', this._commandOptions()));
+    // Off / boost / ventilation as one picker: boost and ventilation exclude each other, so the client
+    // stops whichever is running before it starts the new one.
+    this.registerCapabilityListener('xzense_mode', async (value) => {
+      await this._runCommand(() => this._client.setMode(value, this._commandOptions()));
     });
 
     this._schedulePoll(1000);
@@ -216,8 +217,9 @@ class XzenseDevice extends Homey.Device {
     await this._queueFan(this._clampFanSpeed(percent));
   }
 
-  async setBoost(enabled) {
-    await this._runCommand(() => this._client.setBoost(Boolean(enabled), this._commandOptions()));
+  /** Called by the "Set boost / ventilation" flow card. */
+  async setMode(mode) {
+    await this._runCommand(() => this._client.setMode(mode, this._commandOptions()));
   }
 
   /**
@@ -302,8 +304,7 @@ class XzenseDevice extends Homey.Device {
     await set('measure_temperature.outside', status.outsideTemperature);
     await set('measure_pressure', status.airPressure);
     await set('measure_xzense_fan_speed', status.fanSpeed);
-    const boosting = status.deviceState === 3; // 3 = Boosting
-    await set('xzense_boost_mode', boosting ? 'on' : 'off');
+    await set('xzense_mode', P.modeFromState(status.deviceState));
     await set('xzense_state', P.deviceStateName(status.deviceState));
     await set('alarm_heat', status.chimneyTemperature >= Number(this.getSetting('chimney_alarm_temp') || 220));
 
